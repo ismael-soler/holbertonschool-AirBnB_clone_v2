@@ -5,7 +5,6 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import models
-import models
 
 
 Base = declarative_base()
@@ -18,10 +17,8 @@ class BaseModel:
         """INSTANTINTIANTIENTEINS a new model"""
 
         id = Column(String(60), primary_key=True, nullable=False)
-        created_at = Column(
-            DateTime, default=datetime.utcnow(), nullable=False)
-        updated_at = Column(
-            DateTime, default=datetime.utcnow(), nullable=False)
+        created_at = Column(DateTime, default=datetime.utcnow(), nullable=False)
+        updated_at = Column(DateTime, default=datetime.utcnow(), nullable=False)
 
         if not kwargs:
             from models import storage
@@ -47,8 +44,8 @@ class BaseModel:
         """Updates updated_at with current time when instance is changed"""
         from models import storage
         self.updated_at = datetime.now()
-        storage.new(self)
-        storage.save()
+        models.storage.new(self)
+        models.storage.save()
 
     def to_dict(self):
         """Convert instance into dict format"""
