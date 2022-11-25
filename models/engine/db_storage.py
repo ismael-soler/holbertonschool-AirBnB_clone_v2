@@ -43,7 +43,7 @@ class DBStorage:
     def all(self, cls=None):
         """query database session"""
 
-        obj_dict = dict()
+        obj_dict = {}
         if cls is None:
             for currentClass in DBStorage.classes.values():
                 for obj in self.__session.query(currentClass).all():
@@ -53,30 +53,23 @@ class DBStorage:
                 obj_dict[obj.__class__.__name__ + '.' + obj.id] = obj
         return obj_dict
 
+    def new(self, obj):
+        """"add current obj"""
+        print(type(obj))
+        self.__session.add(obj)
+
+    def save(self):
+        """""save all changes datbase"""
+        self.__session.commit()
+
+    def delete(self, obj=None):
+        """""delete from database"""
+        if obj is not None:
+            self.__session.delete(obj)
+
     def reload(self):
         """ Create all tables in th current DB and the current session """
         Base.metadata.create_all(self.__engine)
         session = sessionmaker(self.__engine, expire_on_commit=False)
         Session = scoped_session(session)
         self.__session = Session()
-
-    def new(self, obj):
-        """ Adding an object to the current DB """
-        self.__session.add(obj)
-        self.__session.commit()
-
-    def delete(self, obj=None):
-        """ Deletes an instance from the current DB """
-        if obj is not None:
-            self.__session.delete(obj)
-            self.save()
-
-    def delete(self, obj=None):
-        """ Deletes an instance from the current DB """
-        if obj is not None:
-            self.__session.delete(obj)
-            self.save()
-
-    def close(self):
-        """ Close method to call remove() method """
-        self.__session.close()
