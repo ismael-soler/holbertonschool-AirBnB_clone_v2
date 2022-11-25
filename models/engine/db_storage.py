@@ -17,14 +17,14 @@ from models.review import Review
 class DBStorage:
     """DB Storage"""
 
-    __engine = None
-    __session = None
-
     classes = {
         'BaseModel': BaseModel, 'User': User, 'Place': Place,
         'State': State, 'City': City, 'Amenity': Amenity,
         'Review': Review
     }
+
+    __engine = None
+    __session = None
 
     def __init__(self):
         """engine must be linked to the MySQL database and user created"""
@@ -42,20 +42,17 @@ class DBStorage:
 
     def all(self, cls=None):
         """query database session"""
-
+        classes = DBStorage.classes
         obj_dict = {}
-        if cls is None:
-            for currentClass in DBStorage.classes.values():
-                for obj in self.__session.query(currentClass).all():
-                    obj_dict[obj.__class__.__name__ + '.' + obj.id] = obj
-        else:
-            for obj in self.__session.query(DBStorage.classes[cls]).all():
-                obj_dict[obj.__class__.__name__ + '.' + obj.id] = obj
+
+        for currentClass in classes:
+            if classes[currentClass] == cls or cls is None:
+                for obj in self.__session.query(classes[currentClass]).all():
+                    obj_dict[type(obj).__name__ + '.' + obj.id] = obj
         return obj_dict
 
     def new(self, obj):
         """"add current obj"""
-        print(type(obj))
         self.__session.add(obj)
 
     def save(self):
@@ -70,6 +67,10 @@ class DBStorage:
     def reload(self):
         """ Create all tables in th current DB and the current session """
         Base.metadata.create_all(self.__engine)
-        session = sessionmaker(self.__engine, expire_on_commit=False)
-        Session = scoped_session(session)
-        self.__session = Session()
+        new_session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(new_session)
+        self.__session = Session
+
+    def close(self):
+        """close"""
+        self.__session.close()

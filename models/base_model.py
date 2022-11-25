@@ -13,27 +13,25 @@ Base = declarative_base()
 class BaseModel:
     """A base class for all hbnb models"""
 
+    id = Column(String(60), primary_key=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow(), nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow(), nullable=False)
+
     def __init__(self, *args, **kwargs):
-        """INSTANTINTIANTIENTEINS a new model"""
-
-        id = Column(String(60), primary_key=True, nullable=False)
-        created_at = Column(DateTime, default=datetime.utcnow(), nullable=False)
-        updated_at = Column(DateTime, default=datetime.utcnow(), nullable=False)
-
+        """Instatntiates a new model"""
+        date = "%Y-%m-%dT%H:%M:%S.%f"
         if not kwargs:
             from models import storage
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-
         else:
-            for key, value in kwargs:
-                if key == 'updated_at' or key == 'created_at':
-                    setattr(self, key, datetime.strptime(
-                        value, '%Y-%m-%dT%H:%M:%S.%f'))
-                elif key != "__name__":
+            for key, value in kwargs.items():
+                if key in ["created_at", "updated_at"]:
+                    setattr(self, key,
+                            datetime.strptime(value, date))
+                elif key != "__class__":
                     setattr(self, key, value)
-            self.__dict__.update(kwargs)
 
     def __str__(self):
         """Returns a string representation of the instance"""
