@@ -4,12 +4,6 @@
 from os import environ
 from sqlalchemy import create_engine, MetaData
 from models.base_model import Base, BaseModel
-from models.user import User
-from models.place import Place
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.review import Review
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.state import State
@@ -18,6 +12,7 @@ from models.user import User
 from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
+
 
 class DBStorage:
     """DB Storage"""
@@ -48,34 +43,40 @@ class DBStorage:
     def all(self, cls=None):
         """query database session"""
 
-        obj_dict = {}
-        if cls is not None:
-            for obj in self.__session.query(DBStorage.classes[cls]).all():
-                obj_dict[f"{cls}.{obj.id}"] = obj
-        else:
+        obj_dict = dict()
+        if cls is None:
             for currentClass in DBStorage.classes.values():
                 for obj in self.__session.query(currentClass).all():
-                    obj_dict[f"{cls}.{obj.id}"] = obj
+                    obj_dict[obj.__class__.__name__ + '.' + obj.id] = obj
+        else:
+            for obj in self.__session.query(DBStorage.classes[cls]).all():
+                obj_dict[obj.__class__.__name__ + '.' + obj.id] = obj
         return obj_dict
 
+    def reload(self):
+        """ Create all tables in th current DB and the current session """
+        Base.metadata.create_all(self.__engine)
+        session = sessionmaker(self.__engine, expire_on_commit=False)
+        Session = scoped_session(session)
+        self.__session = Session()
+
     def new(self, obj):
-        """"add current obj"""
+        """ Adding an object to the current DB """
         self.__session.add(obj)
         self.__session.commit()
 
-    def save(self):
-        """""save all changes datbase"""
-        self.__session.commit()
-
     def delete(self, obj=None):
-        """""delete from database"""
+        """ Deletes an instance from the current DB """
         if obj is not None:
             self.__session.delete(obj)
+            self.save()
 
-    def reload(self):
-        """"reload"""
-        Base.metadata.create_all(self.__engine)
-        make = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(make)
-        self.__session = Session
+    def delete(self, obj=None):
+        """ Deletes an instance from the current DB """
+        if obj is not None:
+            self.__session.delete(obj)
+            self.save()
 
+    def close(self):
+        """ Close method to call remove() method """
+        self.__session.close()
