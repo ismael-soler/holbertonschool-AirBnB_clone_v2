@@ -8,25 +8,15 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-
-
     def all(self, cls=None):
-        """
-        It returns a dictionary of all objects of a specific class
-        """
-
-        if cls is None:
-            return FileStorage.__objects
-        else:
-            filteredDict = {}
-            for key, value in FileStorage.__objects.items():
-
-                className = key.split('.')[0]
-
-                if className == cls.__name__:
-                    filteredDict[key] = value
-
-            return filteredDict
+        """Returns a dictionary of models currently in storage"""
+        if cls is not None:
+            my_dict = {}
+            for key, value in self.__objects.items():
+                if cls == type(value):
+                    my_dict[key] = value
+            return my_dict
+        return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -52,25 +42,22 @@ class FileStorage:
         from models.review import Review
 
         classes = {
-            'BaseModel': BaseModel, 'User': User, 'Place': Place,
-            'State': State, 'City': City, 'Amenity': Amenity,
-            'Review': Review
-        }
+                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
+                    'State': State, 'City': City, 'Amenity': Amenity,
+                    'Review': Review
+                  }
         try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                    self.all()[key] = classes[val['__class__']](**val)
+                        self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
-        """
-        If the object is not None,
-        then delete the object from the dictionary.
-        """
-        if obj is not None:
-            key = type(obj).__name__ + '.' + obj.id
-            if key in self.__objects:
-                del self.__objects[key]
+        """Delete object"""
+        try:
+            del self.__objects["{}.{}".format(type(obj).__name__, obj.id)]
+        except Exception:
+            pass
