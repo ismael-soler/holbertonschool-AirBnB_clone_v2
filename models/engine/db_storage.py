@@ -4,9 +4,20 @@
 from os import environ
 from sqlalchemy import create_engine, MetaData
 from models.base_model import Base, BaseModel
-from models import User, Place, State, City, Amenity, Review
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker, scoped_session
+from models.state import State
+from models.city import City
+from models.user import User
+from models.place import Place
+from models.amenity import Amenity
+from models.review import Review
 
 class DBStorage:
     """DB Storage"""
@@ -50,6 +61,7 @@ class DBStorage:
     def new(self, obj):
         """"add current obj"""
         self.__session.add(obj)
+        self.__session.commit()
 
     def save(self):
         """""save all changes datbase"""
