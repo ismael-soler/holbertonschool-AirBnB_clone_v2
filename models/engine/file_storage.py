@@ -1,23 +1,7 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
 import json
-import os
-from models.base_model import BaseModel
-from models.user import User
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
-from models.review import Review
 
-model = {"BaseModel": BaseModel,
-         "User": User,
-         "State": State,
-         "City": City,
-         "Amenity": Amenity,
-         "Place": Place,
-         "Review": Review
-         }
 
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
@@ -26,14 +10,17 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        if cls != None and self.__objects:
-            retob = {}
-            for key, value in self.__objects.items():
-                classname = (key.split('.'))[0]
-                if classname == cls.__name__:
-                    retob[key] = self.__objects[key]
-            return retob
-        return self.__objects
+        if cls is None:
+            return FileStorage.__objects
+        else:
+            objs_result = {}
+            # Checks each object inside __objects and compare if a key
+            # == to our cls class filter:
+            for key, value in FileStorage.__objects.items():
+                if key.split(".")[0] == cls.__name__:
+                    objs_result[key] = FileStorage.__objects[key]
+            # In objs_result we save all the filtered results:
+            return objs_result
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -73,11 +60,16 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """ delete obj from __objects """
-        if obj is not None:
-            k = obj.__class__.__name__ + "." + obj.id
-            del FileStorage.__objects[k]
+        """Deletes an object from the storage"""
+        if obj is None:
+            return
 
-    def close(self):
-        """ close func """
-        self.reload()
+        # In JSON file we save all the new objects like:
+        # Place.213bhj231af3 = name of the object "." object.id:
+        key = f"{type(obj).__name__}.{obj.id}"
+
+        # If this key exists in __object, we have an object to be deleted:
+        if key in self.all():
+            objects_dict = self.all()
+            objects_dict.pop(key)
+            self.save()
