@@ -10,17 +10,13 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        if cls is None:
-            return FileStorage.__objects
-        else:
-            objs_result = {}
-            # Checks each object inside __objects and compare if a key
-            # == to our cls class filter:
-            for key, value in FileStorage.__objects.items():
-                if key.split(".")[0] == cls.__name__:
-                    objs_result[key] = FileStorage.__objects[key]
-            # In objs_result we save all the filtered results:
-            return objs_result
+        if cls is not None:
+            my_dict = {}
+            for key, value in self.__objects.items():
+                if cls == type(value):
+                    my_dict[key] = value
+            return my_dict
+        return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -46,10 +42,10 @@ class FileStorage:
         from models.review import Review
 
         classes = {
-            'BaseModel': BaseModel, 'User': User, 'Place': Place,
-            'State': State, 'City': City, 'Amenity': Amenity,
-            'Review': Review
-        }
+                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
+                    'State': State, 'City': City, 'Amenity': Amenity,
+                    'Review': Review
+                  }
         try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
@@ -60,13 +56,8 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """Deletes an object from the storage"""
-        if obj is None:
-            return
-
-        key = f"{type(obj).__name__}.{obj.id}"
-
-        if key in self.all():
-            objects_dict = self.all()
-            objects_dict.pop(key)
-            self.save()
+        """Delete object"""
+        try:
+            del self.__objects["{}.{}".format(type(obj).__name__, obj.id)]
+        except Exception:
+            pass
