@@ -1,7 +1,23 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
 import json
+import os
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
+model = {"BaseModel": BaseModel,
+         "User": User,
+         "State": State,
+         "City": City,
+         "Amenity": Amenity,
+         "Place": Place,
+         "Review": Review
+         }
 
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
@@ -10,13 +26,14 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        if cls is not None:
-            my_dict = {}
+        if cls != None and self.__objects:
+            retob = {}
             for key, value in self.__objects.items():
-                if cls == type(value):
-                    my_dict[key] = value
-            return my_dict
-        return FileStorage.__objects
+                classname = (key.split('.'))[0]
+                if classname == cls.__name__:
+                    retob[key] = self.__objects[key]
+            return retob
+        return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -56,8 +73,11 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """Delete object"""
-        try:
-            del self.__objects["{}.{}".format(type(obj).__name__, obj.id)]
-        except Exception:
-            pass
+        """ delete obj from __objects """
+        if obj is not None:
+            k = obj.__class__.__name__ + "." + obj.id
+            del FileStorage.__objects[k]
+
+    def close(self):
+        """ close func """
+        self.reload()
