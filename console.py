@@ -10,6 +10,7 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+import shlex
 
 
 class HBNBCommand(cmd.Cmd):
@@ -19,16 +20,16 @@ class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
     classes = {
-        'BaseModel': BaseModel, 'User': User, 'Place': Place,
-        'State': State, 'City': City, 'Amenity': Amenity,
-        'Review': Review
-    }
+               'BaseModel': BaseModel, 'User': User, 'Place': Place,
+               'State': State, 'City': City, 'Amenity': Amenity,
+               'Review': Review
+              }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
-        'number_rooms': int, 'number_bathrooms': int,
-        'max_guest': int, 'price_by_night': int,
-        'latitude': float, 'longitude': float
-    }
+             'number_rooms': int, 'number_bathrooms': int,
+             'max_guest': int, 'price_by_night': int,
+             'latitude': float, 'longitude': float
+            }
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -37,7 +38,6 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
-
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
         """
@@ -115,31 +115,40 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        className = args.split()[0]
-        params = args.split()[1:]
-
-        if not args:
+        arg = shlex.split(args, posix=False)
+        param = arg[1:]
+        if len(args) == 0:
             print("** class name missing **")
             return
-        elif className not in HBNBCommand.classes:
+        elif arg[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-
-        new_instance = HBNBCommand.classes[className]()
-        for element in params:
-            key = element.split("=")[0]
-            value = element.split("=")[1]
-
-            if value != value.strip('"'):
-                value = value.replace('_', ' ').strip('"')
-            else:
-                if "." in value:
-                    value = float(value)
+        new_instance = HBNBCommand.classes[arg[0]]()
+        for i in param:
+            prekey = i
+            prekey = prekey.split('=')
+            key = str(prekey[0])
+            value = prekey[1]
+            """ que corte solo 1 vez por el char = """
+            if len(value) > 1:
+                if '"' == value[0] and '"' == value[-1]:
+                    """ si no tiene comillas ni punto es tipo int """
+                    try:
+                        value = value.replace('"', "")
+                        if '_' in value:
+                            value = value.replace('_', ' ')
+                    except Exception:
+                        continue
                 else:
-                    value = int(value)
-
-            setattr(new_instance, key, value)
-
+                    """ si tiene punto es tipo float """
+                    try:
+                        value = int(value)
+                    except Exception:
+                        try:
+                            value = float(value)
+                        except Exception:
+                            continue
+                setattr(new_instance, key, value)
         new_instance.save()
         print(new_instance.id)
 
@@ -172,7 +181,7 @@ class HBNBCommand(cmd.Cmd):
 
         key = c_name + "." + c_id
         try:
-            print(storage._FileStorage__objects[key])
+            print(storage.all()[key])
         except KeyError:
             print("** no instance found **")
 
@@ -204,7 +213,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
+            del(storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -227,7 +236,7 @@ class HBNBCommand(cmd.Cmd):
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage.all(self.classes[args]).items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
         print(print_list)
