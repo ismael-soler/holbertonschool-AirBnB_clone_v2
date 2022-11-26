@@ -41,7 +41,9 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """query database session"""
+        """
+        It returns a dictionary of all objects in the database.
+        """
         classes = DBStorage.classes
         obj_dict = {}
 
