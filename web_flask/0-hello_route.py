@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-from flask import Flask
 """
 It creates a Flask instance, and then uses the route decorator to tell the instance what URL should
 trigger the associated function
@@ -8,6 +7,7 @@ trigger the associated function
 slash. Defaults to False, defaults to False (optional)
 :return: The function index is being returned.
 """
+from flask import Flask
 
 app = Flask(__name__)
 
