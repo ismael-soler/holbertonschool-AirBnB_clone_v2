@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-from flask import Flask
 """
 "The function C_is_fun()
 returns a string that is the concatenation of the string "C " and the value of
@@ -10,6 +9,7 @@ to be raised if a url that requires a trailing slash is accessed without one, de
 (optional)
 :return: The route is being returned.
 """
+from flask import Flask
 
 app = Flask(__name__)
 
