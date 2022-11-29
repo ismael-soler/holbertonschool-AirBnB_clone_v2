@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 """
 "The function C_is_fun()
-returns a string that is the concatenation of the string "C " and the value of
-the variable text with underscores (_) replaced by spaces ( )."
+returns a string that is the concatenation of the
+string "C " and the value of
+the variable text with underscores (_) replaced by
+spaces ( )."
 
-:param strict_slashes: If set to True, the strict_slashes parameter will cause a 404 Not Found error
-to be raised if a url that requires a trailing slash is accessed without one, defaults to False
+:param strict_slashes: If set to True, the strict_slashes
+parameter will cause a 404 Not Found error
+to be raised if a url that requires a trailing slash is accessed
+without one, defaults to False
 (optional)
 :return: The route is being returned.
 """
