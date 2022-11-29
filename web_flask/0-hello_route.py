@@ -1,5 +1,13 @@
 #!/usr/bin/python3
 from flask import Flask
+"""
+It creates a Flask instance, and then uses the route decorator to tell the instance what URL should
+trigger the associated function
+
+:param strict_slashes: If set to True, the URLs generated for this endpoint will have a trailing
+slash. Defaults to False, defaults to False (optional)
+:return: The function index is being returned.
+"""
 
 app = Flask(__name__)
 
