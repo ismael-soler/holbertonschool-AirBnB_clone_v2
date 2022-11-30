@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 """
 if the route is /number/<n>,
 return <n> is a number.
@@ -29,9 +28,10 @@ def c_is_fun(text):
 def python_is_cool(text="is cool"):
     return "Python " + text.replace('_', ' ')
 
+
 @app.route('/number/<int:n>', strict_slashes=False)
 def is_number(n):
-        return f"{n} is a number"
+    return f"{n} is a number"
 
 
 if __name__ == "__main__":
