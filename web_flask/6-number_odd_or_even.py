@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Addition: display if n is even or odd
+Addition: display a HTML page only if n is an integer
 """
 from flask import Flask, render_template
 
@@ -37,6 +37,9 @@ def is_number(n):
 def number_template(n):
     return render_template('5-number.html', n=n)
 
+@app.route('/number_odd_or_even/<int:n>', strict_slashes=False)
+def number_odd_or_even(n):
+    return render_template('6-number_odd_or_even.html', n=n)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=5000)
