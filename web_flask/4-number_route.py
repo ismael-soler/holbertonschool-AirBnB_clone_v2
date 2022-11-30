@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 """
 If the route is /, return Hello HBNB!, if the route is /hbnb, return HBNB, if the route is
 /c/<text>, return C <text>, if the route is /python/<text>, return Python <text>, if the route is
@@ -35,7 +34,7 @@ def python_is_cool(text="is cool"):
 
 @app.route('/number/<int:n>', strict_slashes=False)
 def is_number(n):
-    return f"{n} is a number"
+    return "{} is a number".format(n)
 
 
 if __name__ == "__main__":
