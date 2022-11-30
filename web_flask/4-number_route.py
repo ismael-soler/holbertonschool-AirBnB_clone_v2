@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-if the route is /number/<n>,
-return <n> is a number.
+If the route is /number/<n>, return <n> is a number.
 """
 from flask import Flask
 
