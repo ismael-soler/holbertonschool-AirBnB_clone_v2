@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 """
-If the route is /, return Hello HBNB!, if the route is /hbnb, return HBNB, if the route is
-/c/<text>, return C <text>, if the route is /python/<text>, return Python <text>, if the route is
-/python (defaults to is cool), return Python is cool, if the route is /number/<n>, return n is a
+if the route is /number/<n>, return n is a
 number.
 :return: The route is being returned.
 """
